@@ -1,23 +1,28 @@
 # Hitzekompass Hildesheim
 
-## Starten
+Die Website ist mit React, Vite und Leaflet gebaut. Baum-, Hitze- und Schattendaten sowie die Icons liegen lokal im Projekt; die OpenStreetMap-Grundkarte benötigt eine Internetverbindung.
 
-1. Doppelklick auf `start-local.bat`.
-2. Die Karte öffnet sich unter `http://localhost:8000`.
-3. Das schwarze Konsolenfenster offen lassen, solange die Karte läuft. Zum Beenden dort `Strg+C` drücken.
+## Website lokal öffnen
 
-Python und eine Internetverbindung werden benötigt. Die Internetverbindung liefert Leaflet und die OpenStreetMap-Grundkarte. Baum- und Klimadaten liegen im Projektordner.
+```bash
+npm install
+npm run dev
+```
 
-## Projektaufbau
+Vite zeigt im Terminal die Adresse der lokalen Website an.
 
-- `index.html`, `app.js`, `style.css`: die Website. Diese Dateien gehören zusammen.
-- `data/data.js`: lokale Klimadaten und Baumkoordinaten.
-- `data/img/`: Hitze-, Nacht- und Schattenraster.
-- `tools/`: optionale Skripte zum Erzeugen der Kartendaten. Dafür werden zusätzliche Quelldateien benötigt, die nicht Teil dieses Projekts sind.
+## Website bauen
 
-## Ebenen
+```bash
+npm run build
+```
 
-- **Hitze / Klimamodell:** gefühlte Temperatur, aktuelles Szenario, 14 Uhr.
-- **Bäume:** 31.394 Punkte aus dem lokalen Baumkataster.
-- **Schatten:** Schattenraster für 14 Uhr.
-- Sensoren, Gateways, Trinkwasser und kühle Orte sind deaktiviert, weil dafür keine lokalen Datensätze vorhanden sind.
+Die statische Website wird nach `www/` gebaut und kann von dort auf einem Webserver bereitgestellt werden.
+
+## Projektstruktur
+
+- `src/`: React-Oberfläche und Einstiegspunkt.
+- `index.html`, `style.css`: Vite-Einstieg und Gestaltung.
+- `data/data.js`, `data/img/`: Kartendaten und Rasterbilder.
+- `icons/`: SVG-Symbole für die Kartenebenen.
+- `www/`: gebaute Website.

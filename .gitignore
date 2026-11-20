@@ -34,27 +34,3 @@ coverage/
 tmp/
 temp/
 
-# Capacitor native build output (keep android/ and ios/ project files in Git)
-android/.gradle/
-android/**/build/
-android/local.properties
-android/.externalNativeBuild/
-android/.cxx/
-android/captures/
-android/*.iml
-android/app/google-services.json
-android/app/*.jks
-android/app/*.keystore
-ios/Pods/
-ios/build/
-ios/DerivedData/
-ios/App/App/public/
-ios/**/*.xcuserstate
-ios/**/xcuserdata/
-ios/App/App/GoogleService-Info.plist
-
-# Signing credentials and provisioning profiles
-*.jks
-*.keystore
-*.p12
-*.mobileprovision

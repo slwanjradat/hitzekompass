@@ -1,0 +1,53 @@
+:root {
+  color-scheme: light;
+  font: 16px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif;
+  color: #14232b;
+  background: #e9e6df;
+  --teal: #0b5d6b;
+  --panel: rgba(255, 255, 255, .96);
+  --shadow: 0 4px 20px rgba(20, 35, 43, .2);
+}
+* { box-sizing: border-box; }
+html, body, #app { width: 100%; height: 100%; margin: 0; }
+#app { position: relative; overflow: hidden; }
+#map { position: absolute; inset: 0; background: #e9e6df; }
+.map-panel {
+  position: absolute;
+  z-index: 500;
+  top: max(12px, env(safe-area-inset-top));
+  left: max(12px, env(safe-area-inset-left));
+  width: min(340px, calc(100vw - 24px));
+  padding: 14px;
+  border-radius: 16px;
+  background: var(--panel);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(8px);
+}
+h1 { margin: 0 0 12px; color: var(--teal); font-size: 1.15rem; line-height: 1.2; }
+h1 span { display: block; color: #52636a; font-size: .88rem; font-weight: 500; }
+.filters { border-top: 1px solid #e4dfd6; padding-top: 9px; }
+.filters summary { min-height: 36px; display: flex; align-items: center; font-weight: 700; cursor: pointer; }
+.filter-list { display: grid; gap: 3px; }
+.filter-list label { min-height: 40px; display: flex; align-items: center; gap: 10px; padding: 4px 2px; cursor: pointer; }
+.filter-list label.unavailable { color: #78858a; cursor: not-allowed; }
+.filter-list label small { margin-left: auto; color: #7c878b; font-size: .72rem; }
+.filter-list input:disabled { cursor: not-allowed; }
+.filter-list input { width: 20px; height: 20px; margin: 0; accent-color: var(--teal); }
+.key { width: 14px; height: 14px; flex: none; border-radius: 50%; border: 1px solid rgba(0,0,0,.18); }
+.key.heat { background: #df553d; }
+.key.trees { background: #2f8f4e; }
+.key.sensors { background: #e8742c; }
+.key.gateways { background: #6546a5; }
+.key.shade { background: #26385a; }
+.key.water { background: #1e88e5; }
+.key.cool { background: #17a589; }
+#data-status { margin: 10px 0 0; padding-top: 9px; border-top: 1px solid #e4dfd6; color: #5a6b73; font-size: .83rem; }
+.leaflet-container { font: inherit; }
+.leaflet-control-zoom { margin-right: 14px !important; margin-bottom: max(14px, env(safe-area-inset-bottom)) !important; }
+:focus-visible { outline: 3px solid #e8742c; outline-offset: 2px; }
+@media (max-width: 480px) {
+  .map-panel { padding: 11px 13px; }
+  .filter-list { grid-template-columns: 1fr 1fr; column-gap: 8px; }
+  .filter-list label { font-size: .9rem; gap: 7px; }
+  .filters:not([open]) + #data-status { margin-top: 7px; }
+}

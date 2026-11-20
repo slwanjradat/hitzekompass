@@ -6,7 +6,6 @@
   <title>Hitzekompass Hildesheim</title>
   <meta name="description" content="Karte und Datenfilter für den Hitzekompass Hildesheim.">
   <meta name="theme-color" content="#0b5d6b">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -20,15 +19,32 @@
           <label><input type="checkbox" data-layer="heat"><i class="key heat"></i> Hitze / Klimamodell</label>
           <label><input type="checkbox" data-layer="trees"><i class="key trees"></i> Bäume</label>
           <label><input type="checkbox" data-layer="shade"><i class="key shade"></i> Schatten</label>
-          <label class="unavailable"><input type="checkbox" data-layer="water" ><i class="key water"></i> Trinkwasser <small>keine Daten</small></label>
+          <label><input type="checkbox" data-layer="water"><i class="key water"></i> Trinkwasser <small>künstliche Testdaten</small></label>
           <label class="unavailable"><input type="checkbox" data-layer="refill" ><i class="key refill"></i> Refill <small>keine Daten</small></label>
         </div>
       </details>
+      <button id="btn-locate" class="locate-button" type="button">Mein Standort zeigen</button>
+      <p class="map-hint">Aktiviere Bäume oder Trinkwasser und tippe einen Punkt an, um einen Fußweg zu berechnen.</p>
       <p id="data-status" role="status" aria-live="polite">Karte wird geladen …</p>
     </header>
+    <section id="route-panel" class="route-panel" hidden>
+      <div class="route-heading">
+        <div>
+          <strong id="route-title">Fußweg</strong>
+          <p id="route-summary"></p>
+        </div>
+        <button id="route-close" class="icon-button" type="button" aria-label="Route schließen">×</button>
+      </div>
+      <p class="route-note">Google Maps berechnet den Fußweg. Abbiegehinweise öffnest du in Google Maps.</p>
+      <p id="route-guidance" class="route-guidance" role="status" aria-live="polite"></p>
+      <div class="route-actions">
+        <button id="route-start" type="button">In Google Maps navigieren</button>
+      </div>
+    </section>
   </main>
-  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+  <script defer src="config.js"></script>
   <script defer src="data/data.js"></script>
-  <script defer src="app.js"></script>
+  <script defer src="data/demo-water.js"></script>
+  <script defer src="app.js?v=google-maps-1"></script>
 </body>
 </html>

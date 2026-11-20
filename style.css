@@ -42,11 +42,26 @@ h1 span { display: block; color: #52636a; font-size: .88rem; font-weight: 500; }
 .key.water { background: #1e88e5; }
 .key.cool { background: #17a589; }
 #data-status { margin: 10px 0 0; padding-top: 9px; border-top: 1px solid #e4dfd6; color: #5a6b73; font-size: .83rem; }
-.leaflet-container { font: inherit; }
-.leaflet-control-zoom { margin-right: 14px !important; margin-bottom: max(14px, env(safe-area-inset-bottom)) !important; }
+.locate-button { width: 100%; min-height: 42px; margin-top: 10px; border: 0; border-radius: 10px; background: var(--teal); color: #fff; font: inherit; font-weight: 700; cursor: pointer; }
+.locate-button:hover { background: #084a55; }
+.locate-button:disabled { opacity: .65; cursor: wait; }
+.map-hint { margin: 8px 0 0; color: #52636a; font-size: .78rem; }
+.route-panel { position: absolute; z-index: 600; left: 12px; bottom: max(12px, env(safe-area-inset-bottom)); width: min(390px, calc(100vw - 24px)); max-height: min(52vh, 520px); display: flex; flex-direction: column; padding: 14px; border-radius: 16px; background: var(--panel); box-shadow: var(--shadow); }
+.route-panel[hidden] { display: none; }
+.route-heading { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+.route-heading strong { color: var(--teal); font-size: 1rem; }
+.route-heading p { margin: 3px 0 0; color: #5a6b73; font-size: .86rem; }
+.route-note { margin: 8px 0 0; color: #52636a; font-size: .74rem; }
+.icon-button { width: 34px; height: 34px; flex: none; border: 0; border-radius: 50%; background: #eef2f3; color: #26383f; font: inherit; font-size: 1.35rem; cursor: pointer; }
+.route-guidance { margin: 10px 0; padding: 10px; border-radius: 10px; background: #e8f2ff; color: #163b71; font-weight: 700; }
+.route-actions { display: flex; gap: 8px; margin-top: 10px; }
+.route-actions button { flex: 1; min-height: 40px; border: 0; border-radius: 9px; background: var(--teal); color: white; font: inherit; font-weight: 700; cursor: pointer; }
+.route-actions button:disabled { opacity: .6; cursor: wait; }
+:is(.gm-style, .gm-style button, .gm-style input) { font-family: inherit; }
 :focus-visible { outline: 3px solid #e8742c; outline-offset: 2px; }
 @media (max-width: 480px) {
   .map-panel { padding: 11px 13px; }
+  .route-panel { left: 10px; width: calc(100vw - 20px); padding: 12px; }
   .filter-list { grid-template-columns: 1fr 1fr; column-gap: 8px; }
   .filter-list label { font-size: .9rem; gap: 7px; }
   .filters:not([open]) + #data-status { margin-top: 7px; }

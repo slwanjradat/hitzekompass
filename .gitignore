@@ -1,0 +1,60 @@
+# Node.js dependencies and logs
+node_modules/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Package manager and tooling caches
+.npm/
+.eslintcache
+.parcel-cache/
+.vite/
+.turbo/
+
+# Local environment and editor/OS files
+.env
+.env.*
+!.env.example
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.swp
+*.swo
+*~
+
+# Build output and caches
+dist/
+build/
+.cache/
+coverage/
+tmp/
+temp/
+
+# Capacitor native build output (keep android/ and ios/ project files in Git)
+android/.gradle/
+android/**/build/
+android/local.properties
+android/.externalNativeBuild/
+android/.cxx/
+android/captures/
+android/*.iml
+android/app/google-services.json
+android/app/*.jks
+android/app/*.keystore
+ios/Pods/
+ios/build/
+ios/DerivedData/
+ios/App/App/public/
+ios/**/*.xcuserstate
+ios/**/xcuserdata/
+ios/App/App/GoogleService-Info.plist
+
+# Signing credentials and provisioning profiles
+*.jks
+*.keystore
+*.p12
+*.mobileprovision

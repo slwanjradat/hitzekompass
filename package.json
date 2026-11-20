@@ -1,0 +1,29 @@
+{
+  "name": "hitzekompass",
+  "version": "1.0.0",
+  "description": "1. Doppelklick auf `start-local.bat`. 2. Die Karte öffnet sich unter `http://localhost:8000`. 3. Das schwarze Konsolenfenster offen lassen, solange die Karte läuft. Zum Beenden dort `Strg+C` drücken.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/slwanjradat/hitzekompass.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/slwanjradat/hitzekompass/issues"
+  },
+  "homepage": "https://github.com/slwanjradat/hitzekompass#readme",
+  "dependencies": {
+    "@capacitor/android": "^8.6.2",
+    "@capacitor/core": "^8.6.2",
+    "@capacitor/ios": "^8.6.2"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.6.2"
+  }
+}

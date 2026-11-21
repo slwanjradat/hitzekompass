@@ -27,6 +27,7 @@ Thumbs.db
 *~
 
 # Build output and caches
+www/
 dist/
 build/
 .cache/

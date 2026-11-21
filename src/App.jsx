@@ -16,6 +16,7 @@ export default function App() {
   const [activeLayers, setActiveLayers] = useState({ heat: false, trees: false, shade: false });
   const [status, setStatus] = useState('Kartendaten werden geladen …');
   const [loadError, setLoadError] = useState(false);
+  const [locating, setLocating] = useState(false);
 
   useEffect(() => {
     const localData = window.HK_DATA;
@@ -63,6 +64,8 @@ export default function App() {
     const treePane = map.createPane('tree-points');
     treePane.style.zIndex = 400;
     treePane.style.pointerEvents = 'none';
+    const locationPane = map.createPane('user-location');
+    locationPane.style.zIndex = 650;
 
     const heat = L.imageOverlay('./data/img/pet_ist.png', bounds, {
       pane: 'heat', opacity: 0.72, interactive: false,
@@ -106,7 +109,8 @@ export default function App() {
       },
     });
     const trees = new TreeTiles({ pane: 'tree-points', minZoom: 11, maxZoom: 19, tileSize: 256 });
-    mapState.current = { map, layers: { heat, trees, shade } };
+    const location = L.layerGroup().addTo(map);
+    mapState.current = { map, layers: { heat, trees, shade }, location };
 
     map.on('click', (event) => {
       const { lat, lng } = event.latlng;
@@ -133,6 +137,67 @@ export default function App() {
     }
   }, [activeLayers, data]);
 
+  function showMyLocation() {
+    if (!navigator.geolocation) {
+      setStatus('Standortzugriff ist nicht verfügbar. Öffne die Website über HTTPS oder localhost.');
+      return;
+    }
+
+    setLocating(true);
+    setStatus('Standort wird ermittelt …');
+    navigator.geolocation.getCurrentPosition(
+      ({ coords }) => {
+        setLocating(false);
+        const current = mapState.current;
+        if (!current) return;
+
+        const point = [coords.latitude, coords.longitude];
+        const accuracy = Number.isFinite(coords.accuracy) ? coords.accuracy : 0;
+        current.map.setMaxBounds(null);
+        current.location.clearLayers();
+        L.circle(point, {
+          pane: 'user-location',
+          radius: accuracy,
+          color: '#1479d1',
+          weight: 1,
+          fillColor: '#4aa3f0',
+          fillOpacity: 0.16,
+          interactive: false,
+        }).addTo(current.location);
+        L.circleMarker(point, {
+          pane: 'user-location',
+          radius: 8,
+          color: '#ffffff',
+          weight: 3,
+          fillColor: '#1479d1',
+          fillOpacity: 1,
+          interactive: false,
+        }).addTo(current.location);
+
+        const zoom = accuracy > 3000 ? 12 : accuracy > 1000 ? 13 : accuracy > 500 ? 14 : 16;
+        current.map.setView(point, zoom, { animate: true });
+        const insideDataArea = point[0] >= data.meta.bounds[0][0]
+          && point[0] <= data.meta.bounds[1][0]
+          && point[1] >= data.meta.bounds[0][1]
+          && point[1] <= data.meta.bounds[1][1];
+        setStatus(insideDataArea
+          ? 'Dein Standort wird nur auf dieser Karte angezeigt.'
+          : 'Standort angezeigt. Die Hitzekompass-Daten decken nur Hildesheim ab.');
+      },
+      (error) => {
+        setLocating(false);
+        if (error.code === error.PERMISSION_DENIED) {
+          setStatus('Standortzugriff abgelehnt. Du kannst ihn in den Browsereinstellungen erlauben.');
+        } else if (error.code === error.POSITION_UNAVAILABLE) {
+          setStatus('Dein Standort konnte gerade nicht ermittelt werden.');
+        } else {
+          setStatus('Die Standortabfrage hat zu lange gedauert. Bitte versuche es erneut.');
+        }
+      },
+      { enableHighAccuracy: true, maximumAge: 15_000, timeout: 15_000 },
+    );
+  }
+
   const available = {
     heat: Boolean(data?.meta?.bounds),
     trees: Array.isArray(data?.trees) && data.trees.length > 0,
@@ -146,6 +211,13 @@ export default function App() {
       <div id="map" ref={mapElement} role="application" aria-label="Karte von Hildesheim" />
       <header className="map-panel">
         <h1>Hitzekompass <span>Hildesheim</span></h1>
+        <button className="location-button" type="button" onClick={showMyLocation} disabled={!data || locating}>
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 2.75a7 7 0 0 0-7 7c0 5.15 7 11.5 7 11.5s7-6.35 7-11.5a7 7 0 0 0-7-7Zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5Z" />
+          </svg>
+          {locating ? 'Standort wird gesucht …' : 'Mein Standort'}
+        </button>
+        <p className="location-note">Dein Standort wird nur für diese Kartenansicht verwendet.</p>
         <details className="filters" open>
           <summary>Kartenebenen</summary>
           <div className="filter-list" role="group" aria-label="Datenebenen">

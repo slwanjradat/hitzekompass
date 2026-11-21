@@ -1,15 +1,134 @@
 <!doctype html>
 <html lang="de">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="theme-color" content="#0b5d6b" />
-    <meta name="description" content="Karte und Datenfilter für den Hitzekompass Hildesheim." />
-    <title>Hitzekompass Hildesheim</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script src="./data/data.js"></script>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Hitzekompass Hildesheim</title>
+  <meta name="description" content="Karte, Fußwege und lokale Hinweise für den Hitzekompass Hildesheim.">
+  <meta name="theme-color" content="#0b5d6b">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <main id="app">
+    <div id="map" role="application" aria-label="Interaktive Karte von Hildesheim"></div>
+    <header class="map-panel" aria-label="Hitzekompass-Steuerung">
+      <h1>CoolHildesheim</h1>
+
+      <details class="panel-section" id="user-profile-section">
+        <summary>Profil</summary>
+        <form id="profile-form">
+          <label for="profile-name">Name</label>
+          <input id="profile-name" name="name" maxlength="60" autocomplete="nickname" required placeholder="Name">
+          <label for="profile-age">Alter</label>
+          <input id="profile-age" name="age" type="number" min="1" max="120" inputmode="numeric" required>
+          <fieldset class="notification-preferences">
+            <legend>Hinweise</legend>
+            <label><input type="checkbox" name="notifications" value="drink"> Trinken</label>
+            <label><input type="checkbox" name="notifications" value="heat"> Hitze</label>
+            <label><input type="checkbox" name="notifications" value="air"> Luft</label>
+          </fieldset>
+          <button type="submit" class="primary-button">Speichern</button>
+        </form>
+        <p id="profile-status" class="muted" role="status" aria-live="polite"></p>
+        <p class="local-only-note">Nur lokal. Keine Meldungen aktiv.</p>
+      </details>
+
+      <button id="location-button" class="location-button" type="button">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.75a7 7 0 0 0-7 7c0 5.15 7 11.5 7 11.5s7-6.35 7-11.5a7 7 0 0 0-7-7Zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5Z" /></svg>
+        <span>Standort</span>
+      </button>
+      <p class="location-note">Nur nach Freigabe.</p>
+      <button id="route-mode-toggle" class="secondary-button route-mode-toggle" type="button" aria-label="Route ein- oder ausschalten" aria-pressed="false">Route</button>
+
+      <details class="panel-section filters" open>
+        <summary>Ebenen</summary>
+        <div class="filter-list" role="group" aria-label="Kartenebenen">
+          <button class="layer-toggle" type="button" data-layer="heat" aria-pressed="false">
+            <img class="layer-icon" data-icon="Karte" src="./icons/Karte_inaktiv.svg" alt="" aria-hidden="true">
+            <span>Hitze</span>
+          </button>
+          <button class="layer-toggle" type="button" data-layer="trees" aria-pressed="false">
+            <img class="layer-icon" data-icon="Baeume" src="./icons/Baeume_inaktiv.svg" alt="" aria-hidden="true">
+            <span>Bäume</span>
+          </button>
+          <button class="layer-toggle" type="button" data-layer="shade" aria-pressed="false">
+            <img class="layer-icon" data-icon="Schatten" src="./icons/Schatten_inaktiv.svg" alt="" aria-hidden="true">
+            <span>Schatten <small>14 Uhr</small></span>
+          </button>
+          <button class="layer-toggle demo-label" type="button" data-layer="water" aria-pressed="false">
+            <img class="layer-icon" data-icon="Wasser" src="./icons/Wasser_inaktiv.svg" alt="" aria-hidden="true">
+            <span>Wasser <small>Demo</small></span>
+          </button>
+          <button class="layer-toggle empty-label" type="button" data-layer="pm" aria-pressed="false">
+            <span class="layer-symbol pm-symbol" aria-hidden="true">PM</span>
+            <span>Luft <small>PM · leer</small></span>
+          </button>
+          <button class="layer-toggle demo-label" type="button" data-layer="emergency" aria-pressed="false">
+            <span class="layer-symbol emergency-symbol" aria-hidden="true">!</span>
+            <span>Notfall <small>DEMO</small></span>
+          </button>
+        </div>
+      </details>
+
+      <p id="data-status" role="status" aria-live="polite">Karte wird geladen …</p>
+    </header>
+
+    <aside id="layer-message" class="map-message" role="status" aria-live="polite" hidden></aside>
+    <div id="route-consent" class="modal-backdrop" hidden>
+      <section class="modal-card" role="dialog" aria-modal="true" aria-labelledby="route-consent-title">
+        <h2 id="route-consent-title">Fußroute berechnen</h2>
+        <p>Für die Route werden dein aktueller Standort und der gewählte Zielpunkt an den <strong>FOSSGIS-Routenserver</strong> gesendet. Laut dessen Datenschutzhinweis werden Routenanfragen in Serverprotokollen gespeichert.</p>
+        <p>Wenn du ablehnst, bleibt der Zielpunkt markiert, aber es wird keine Route berechnet.</p>
+        <label class="consent-check"><input id="route-consent-check" type="checkbox"> Ich stimme der Übermittlung von Start- und Zielpunkt für die Fußroute in dieser Browser-Sitzung zu.</label>
+        <div class="modal-actions">
+          <button id="route-consent-cancel" type="button" class="secondary-button">Abbrechen</button>
+          <button id="route-consent-accept" type="button" class="primary-button" disabled>Zustimmen &amp; fortfahren</button>
+        </div>
+      </section>
+    </div>
+
+    <div id="arrival-feedback" class="modal-backdrop" hidden>
+      <section class="modal-card feedback-card" role="dialog" aria-modal="true" aria-labelledby="feedback-title">
+        <h2 id="feedback-title">Du bist am Ziel angekommen</h2>
+        <p id="feedback-question">Geht es dir an diesem Ort besser?</p>
+        <div class="smiley-options" role="group" aria-label="Wie fühlst du dich an diesem Ort?">
+          <button type="button" data-feeling="better" aria-label="Ja, besser">🙂<span>Besser</span></button>
+          <button type="button" data-feeling="same" aria-label="Unverändert">😐<span>Gleich</span></button>
+          <button type="button" data-feeling="worse" aria-label="Nein, schlechter">🙁<span>Schlechter</span></button>
+        </div>
+        <button id="open-report" type="button" class="secondary-button">Hinweis</button>
+        <button id="skip-feedback" type="button" class="text-button">Später</button>
+        <p class="local-only-note">Deine Rückmeldung bleibt auf diesem Gerät und wird nicht übertragen.</p>
+      </section>
+    </div>
+
+    <div id="report-modal" class="modal-backdrop" hidden>
+      <section class="modal-card" role="dialog" aria-modal="true" aria-labelledby="report-title">
+        <h2 id="report-title">Hinweis</h2>
+        <form id="report-form">
+          <label for="report-category">Thema</label>
+          <select id="report-category" required>
+            <option value="tree">Baum</option>
+            <option value="shade">Schatten</option>
+            <option value="water">Wasser / Refill</option>
+            <option value="other">Anderes</option>
+            <option value="emergency">Notfallinfo</option>
+          </select>
+          <label for="report-text">Meldung</label>
+          <textarea id="report-text" rows="3" maxlength="1000" required placeholder="Was ist aufgefallen?"></textarea>
+          <button id="report-location-button" type="button" class="secondary-button">Ort wählen</button>
+          <p id="report-location" class="muted">Ort: Zielpunkt</p>
+          <button type="submit" class="primary-button">Speichern</button>
+        </form>
+        <button id="export-local-data" type="button" class="text-button">Daten exportieren</button>
+        <button id="close-report" type="button" class="text-button">Zurück</button>
+        <p class="local-only-note">Nur lokal gespeichert.</p>
+      </section>
+    </div>
+  </main>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+  <script defer src="./data/data.js"></script>
+  <script defer src="./app.js"></script>
+</body>
 </html>

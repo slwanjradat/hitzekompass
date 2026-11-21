@@ -1,7 +1,7 @@
 {
   "name": "hitzekompass",
   "version": "1.0.0",
-  "description": "React-Karte für den Hitzekompass Hildesheim",
+  "description": "Website für den Hitzekompass Hildesheim",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
     "build": "vite build",
@@ -19,11 +19,6 @@
     "url": "https://github.com/slwanjradat/hitzekompass/issues"
   },
   "homepage": "https://github.com/slwanjradat/hitzekompass#readme",
-  "dependencies": {
-    "leaflet": "^1.9.4",
-    "react": "^19.3.1",
-    "react-dom": "^19.3.1"
-  },
   "devDependencies": {
     "vite": "^8.3.8"
   }

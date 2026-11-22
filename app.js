@@ -1,6 +1,7 @@
 (() => {
   'use strict';
   const $ = (s) => document.querySelector(s);
+  $('.notice-close')?.addEventListener('click', () => $('.heat-notice')?.remove());
   const status = $('#data-status');
   const controls = [...document.querySelectorAll('[data-layer]')];
   const data = window.HK_DATA;
@@ -23,8 +24,8 @@
   const TreeTiles = L.GridLayer.extend({ createTile(coords) {
     const canvas = document.createElement('canvas'); const size = this.getTileSize(); canvas.width = size.x; canvas.height = size.y;
     const ctx = canvas.getContext('2d'); const scale = 2 ** coords.z; const left = coords.x / scale; const top = coords.y / scale; const right = (coords.x + 1) / scale; const bottom = (coords.y + 1) / scale;
-    const pad = 7 / (256 * scale); const radius = coords.z >= 17 ? 3.2 : coords.z >= 15 ? 2.6 : 2.1;
-    ctx.fillStyle = 'rgba(36,132,66,.92)'; ctx.strokeStyle = 'rgba(255,255,255,.9)'; ctx.lineWidth = coords.z >= 16 ? .8 : 0;
+    const pad = 7 / (256 * scale); const radius = 3;
+    ctx.fillStyle = '#65ce09'; ctx.strokeStyle = 'rgba(255,255,255,.9)'; ctx.lineWidth = coords.z >= 16 ? .8 : 0;
     for (const row of rows) { if (!Array.isArray(row) || !Number.isFinite(+row[0]) || !Number.isFinite(+row[1])) continue;
       const lat = +row[0] * Math.PI / 180; const x = (+row[1] + 180) / 360; const y = (1 - Math.log(Math.tan(lat) + 1 / Math.cos(lat)) / Math.PI) / 2;
       if (x < left-pad || x > right+pad || y < top-pad || y > bottom+pad) continue;
@@ -70,7 +71,7 @@
     if (enabled && layer && !map.hasLayer(layer)) layer.addTo(map);
     if (!enabled && layer && map.hasLayer(layer)) map.removeLayer(layer);
     const icon = control.querySelector('[data-icon]');
-    if (icon) icon.src = `./icons/${icon.dataset.icon}${enabled ? '' : '_inaktiv'}.svg`;
+    if (icon) icon.src = `./icons/${icon.dataset.icon}${enabled ? '' : '_inaktiv'}.png`;
     if (key === 'pm' && enabled) $('#layer-message').textContent = 'Keine belastbare Feinstaub-Messquelle im Projekt vorhanden. Es werden keine Messwerte angezeigt.';
     else if ($('#layer-message').textContent.startsWith('Keine belastbare')) $('#layer-message').textContent = '';
     $('#layer-message').hidden = !$('#layer-message').textContent;
@@ -176,6 +177,6 @@
     try{localStorage.setItem('hk-user-profile',JSON.stringify(profile));$('#profile-status').textContent='Profil und Benachrichtigungswünsche wurden auf diesem Gerät gespeichert.';}catch{$('#profile-status').textContent='Das Profil konnte nicht lokal gespeichert werden. Prüfe die Speichereinstellungen deines Browsers.';}
   });
   $('#location-button').addEventListener('click',()=>{if(!navigator.geolocation){status.textContent='Standortzugriff ist nicht verfügbar. Öffne die Website über HTTPS oder localhost.';return;}status.textContent='Standort wird ermittelt …';navigator.geolocation.getCurrentPosition((pos)=>{origin=[pos.coords.latitude,pos.coords.longitude];locationLayer.clearLayers();L.circle(origin,{pane:'user-location',radius:pos.coords.accuracy||0,color:'#1479d1',weight:1,fillColor:'#4aa3f0',fillOpacity:.16,interactive:false}).addTo(locationLayer);L.circleMarker(origin,{pane:'user-location',radius:8,color:'#fff',weight:3,fillColor:'#1479d1',fillOpacity:1,interactive:false}).addTo(locationLayer);map.setView(origin,16);status.textContent='Standort nur auf dieser Karte angezeigt.';},()=>{status.textContent='Standort konnte nicht abgerufen werden. Erlaube den Zugriff in den Browsereinstellungen.';},{enableHighAccuracy:true,maximumAge:15000,timeout:15000});});
-  status.textContent='Bereit';
+  status.textContent='Letzte Aktualisierung: Heute 14:00';
   window.HK={map,layers,data};
 })();
